@@ -1,11 +1,7 @@
 // LoginPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-=======
 import "../styles/LoginPage.css";
-
->>>>>>> c6de058e58620b088cc0c66824bd82b414309cd5
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
