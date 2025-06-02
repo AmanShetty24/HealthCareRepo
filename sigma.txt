@@ -163,7 +163,7 @@ export default function Dashboard() {
     <>
       <style jsx>{`
         /* Bootstrap CDN should be included in your index.html */
-        
+
         /* Custom CSS Styles */
         .dashboard-container {
           min-height: 100vh;
@@ -692,11 +692,11 @@ export default function Dashboard() {
             position: static;
             transform: translateX(0);
           }
-          
+
           .main-content {
             margin-left: 16rem;
           }
-          
+
           .menu-toggle {
             display: none;
           }
@@ -712,21 +712,21 @@ export default function Dashboard() {
       <div className="dashboard-container">
         {/* Mobile sidebar overlay */}
         {sidebarOpen && (
-          <div 
-            className="sidebar-overlay d-lg-none" 
+          <div
+            className="sidebar-overlay d-lg-none"
             onClick={() => setSidebarOpen(false)}
           ></div>
         )}
 
         {/* Sidebar */}
-        <div className={`sidebar ${sidebarOpen ? 'show' : ''} d-lg-block`}>
+        <div className={`sidebar ${sidebarOpen ? "show" : ""} d-lg-block`}>
           <div className="sidebar-header">
             <div className="sidebar-brand">
               <Heart size={32} color="#0d6efd" />
               <span className="sidebar-brand-text">HealthCare Pro</span>
             </div>
-            <button 
-              className="btn-close d-lg-none" 
+            <button
+              className="btn-close d-lg-none"
               onClick={() => setSidebarOpen(false)}
               aria-label="Close"
             ></button>
@@ -739,7 +739,7 @@ export default function Dashboard() {
                 <div key={item.name} className="nav-item">
                   <Link
                     to={item.path}
-                    className={`nav-link ${item.current ? 'active' : ''}`}
+                    className={`nav-link ${item.current ? "active" : ""}`}
                     onClick={() => setSidebarOpen(false)}
                   >
                     <Icon size={20} className="nav-icon" />
@@ -781,9 +781,7 @@ export default function Dashboard() {
                   )}
                 </div>
                 <div className="user-info">
-                  <div className="user-avatar">
-                    {user.name?.[0] || "U"}
-                  </div>
+                  <div className="user-avatar">{user.name?.[0] || "U"}</div>
                   <div className="user-details">
                     <h6>{user.name}</h6>
                     <small>{user.role}</small>
@@ -893,7 +891,9 @@ export default function Dashboard() {
                           </div>
                           <div>
                             <h4 className="action-title">{action.title}</h4>
-                            <p className="action-description">{action.description}</p>
+                            <p className="action-description">
+                              {action.description}
+                            </p>
                           </div>
                         </div>
                       </Link>
@@ -919,12 +919,16 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ) : alerts.length === 0 ? (
-                  <p className="text-muted text-center py-4">No recent alerts.</p>
+                  <p className="text-muted text-center py-4">
+                    No recent alerts.
+                  </p>
                 ) : (
                   <div>
                     {alerts.slice(0, 3).map((alert) => (
                       <div key={alert._id} className="alert-item">
-                        <div className={`alert-indicator ${alert.priority}`}></div>
+                        <div
+                          className={`alert-indicator ${alert.priority}`}
+                        ></div>
                         <div className="alert-body">
                           <h4 className="alert-title">{alert.title}</h4>
                           <p className="alert-message">{alert.message}</p>
