@@ -50,13 +50,11 @@
     "available-typed-arrays": "^1.0.7",
     "axe-core": "^4.10.3",
     "axios": "^1.9.0",
-<<<<<<< HEAD
     "fs": "^0.0.1-security",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.1",
     "react-scripts": "5.0.1",
-=======
     "axobject-query": "^4.1.0",
     "babel-jest": "^27.5.1",
     "babel-loader": "^8.4.1",
@@ -821,7 +819,6 @@
     "sisteransi": "^1.0.5",
     "slash": "^3.0.0",
     "smart-buffer": "^4.2.0",
->>>>>>> 3c79d652edcaea31a2ebac17a5ed8f120b15754b
     "socket": "^0.14.57",
     "socket.io-client": "^4.8.1",
     "socket.io-parser": "^4.2.4",
