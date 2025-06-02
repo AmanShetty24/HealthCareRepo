@@ -1,21 +1,47 @@
- // src/pages/Dashboard.jsx
+// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../utils/axiosInstance";
 import { useAuthContext } from "../context/AuthContext";
 import "../styles/Dashboard.css"; // Assuming you have some styles for the dashboard
 export default function Dashboard() {
-  const { user } = useAuthContext();
+  let { user } = useAuthContext();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    axiosInstance
-      .get("/alerts")
-      .then((res) => setAlerts(res.data.slice(0, 3))) // top 3 alerts
-      .finally(() => setLoading(false));
-  }, []);
+  // 💡 TEMP: Use a mock user if auth context is missing
+  if (!user) {
+    user = {
+      name: "Test User",
+      role: "admin", // change to 'doctor' or 'pharmacy' to test other roles
+    };
+  }
 
-  if (!user) return <div>Loading user info...</div>;
+  useEffect(() => {
+    const dummyAlerts = [
+      {
+        _id: "1",
+        title: "Test Alert",
+        message: "This is a test alert message.",
+        priority: "Low",
+      },
+      {
+        _id: "2",
+        title: "System Update",
+        message: "Routine maintenance scheduled at midnight.",
+        priority: "Medium",
+      },
+      {
+        _id: "3",
+        title: "Critical Drug Low",
+        message: "Insulin stock is running low.",
+        priority: "High",
+      },
+    ];
+
+    setTimeout(() => {
+      setAlerts(dummyAlerts);
+      setLoading(false);
+    }, 500);
+  }, []);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
