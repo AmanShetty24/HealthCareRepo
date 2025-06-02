@@ -1,10 +1,13 @@
+// LoginPage.js
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 
 function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate(); // ✅ add this hook
 
     const users = [
         { email: "john.doe@example.com", password: "Password123!" },
@@ -30,7 +33,8 @@ function LoginPage() {
             return;
         }
         setError("");
-        alert("Login successful!");
+        // alert("Login successful!");
+        navigate("/dashboard"); // ✅ route to dashboard
     };
 
     return (
