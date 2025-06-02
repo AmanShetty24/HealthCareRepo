@@ -1,7 +1,7 @@
 // src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
-import "../styles/Dashboard.css"; // Assuming you have some styles for the dashboard
+import "../styles/DashBoard.css"; // Assuming you have some styles for the dashboard
 export default function Dashboard() {
   let { user } = useAuthContext();
   const [alerts, setAlerts] = useState([]);
