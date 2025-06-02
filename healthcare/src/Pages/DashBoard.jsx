@@ -1,19 +1,25 @@
 // src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
+import "../styles/DashBoard.css";
+
 
 export default function Dashboard() {
-  let { user } = useAuthContext();
+  const { user: authUser } = useAuthContext();
+  const [user, setUser] = useState(authUser);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 💡 TEMP: Use a mock user if auth context is missing
-  if (!user) {
-    user = {
-      name: "Test User",
-      role: "admin", // change to 'doctor' or 'pharmacy' to test other roles
-    };
-  }
+  // Fallback mock user if no auth user found (run once)
+  useEffect(() => {
+    if (!authUser) {
+      setUser({
+        name: "Test User",
+        role: "admin", // change to 'doctor' or 'pharmacy' to test other roles
+      });
+    }
+  }, [authUser]);
 
   useEffect(() => {
     const dummyAlerts = [
@@ -42,6 +48,11 @@ export default function Dashboard() {
       setLoading(false);
     }, 500);
   }, []);
+
+  if (!user) {
+    // Optional: you can return a loading state while user is not ready
+    return <p>Loading user info...</p>;
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -98,11 +109,11 @@ export default function Dashboard() {
 
 function QuickLink({ title, to }) {
   return (
-    <a
-      href={to}
+    <Link
+      to={to}
       className="block p-6 bg-blue-100 rounded shadow hover:bg-blue-200 transition text-center font-semibold"
     >
       {title}
-    </a>
+    </Link>
   );
 }

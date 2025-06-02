@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
-
+import "../styles/UserManagement.css"; // Assuming you have some styles
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState({ role: "", isActive: "" });

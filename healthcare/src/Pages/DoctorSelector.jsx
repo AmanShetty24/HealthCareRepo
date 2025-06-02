@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
-
+import "../styles/DoctorSelector.css"
 const DoctorSelector = ({ value, onChange, disabled }) => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
