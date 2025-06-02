@@ -1,0 +1,946 @@
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
+import { useAuthContext } from "../context/AuthContext";
+import {
+  Users,
+  Calendar,
+  Pill,
+  AlertTriangle,
+  Activity,
+  BarChart3,
+  User,
+  LogOut,
+  Bell,
+  Menu,
+  X,
+  Heart,
+  Clock,
+  TrendingUp,
+  Shield,
+} from "lucide-react";
+
+export default function Dashboard() {
+  const { user, logout } = useAuthContext();
+  const navigate = useNavigate();
+  const [alerts, setAlerts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [stats, setStats] = useState({
+    totalPatients: 245,
+    activeTokens: 12,
+    pendingOT: 3,
+    lowStock: 5,
+  });
+
+  useEffect(() => {
+    // Simulate API call for alerts
+    setTimeout(() => {
+      setAlerts([
+        {
+          _id: "1",
+          title: "Low Stock Alert",
+          message: "Paracetamol running low",
+          priority: "high",
+        },
+        {
+          _id: "2",
+          title: "OT Schedule",
+          message: "Emergency surgery scheduled",
+          priority: "medium",
+        },
+        {
+          _id: "3",
+          title: "System Update",
+          message: "Maintenance scheduled tonight",
+          priority: "low",
+        },
+      ]);
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  const getNavItems = () => {
+    const baseItems = [
+      { name: "Dashboard", path: "/dashboard", icon: Activity, current: true },
+      { name: "Tokens", path: "/tokens", icon: Clock },
+      { name: "OT Management", path: "/ot", icon: Calendar },
+      { name: "Drug Inventory", path: "/drugs", icon: Pill },
+      { name: "Alerts", path: "/alerts", icon: AlertTriangle },
+      { name: "Profile", path: "/profile", icon: User },
+      { name: "Public Display", path: "/public-display", icon: TrendingUp },
+    ];
+
+    if (user?.role === "admin") {
+      baseItems.splice(
+        -2,
+        0,
+        { name: "User Management", path: "/manage-users", icon: Users },
+        { name: "Reports", path: "/token-stats", icon: BarChart3 }
+      );
+    }
+
+    return baseItems;
+  };
+
+  const getQuickActions = () => {
+    const actions = [];
+
+    if (user?.role === "admin") {
+      actions.push(
+        {
+          title: "Manage Users",
+          description: "Add, edit, or deactivate users",
+          path: "/manage-users",
+          icon: Users,
+          color: "primary",
+        },
+        {
+          title: "View Reports",
+          description: "Analytics and statistics",
+          path: "/token-stats",
+          icon: BarChart3,
+          color: "success",
+        }
+      );
+    }
+
+    if (user?.role === "doctor" || user?.role === "admin") {
+      actions.push(
+        {
+          title: "OT Slots",
+          description: "Manage operation theater",
+          path: "/ot",
+          icon: Calendar,
+          color: "secondary",
+        },
+        {
+          title: "Patient Tokens",
+          description: "View and manage tokens",
+          path: "/tokens",
+          icon: Clock,
+          color: "warning",
+        }
+      );
+    }
+
+    if (user?.role === "pharmacy" || user?.role === "admin") {
+      actions.push({
+        title: "Drug Inventory",
+        description: "Stock management",
+        path: "/drugs",
+        icon: Pill,
+        color: "danger",
+      });
+    }
+
+    actions.push({
+      title: "Alerts Panel",
+      description: "View system alerts",
+      path: "/alerts",
+      icon: AlertTriangle,
+      color: "info",
+    });
+
+    return actions;
+  };
+
+  if (!user)
+    return (
+      <div className="loading-container">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+
+  return (
+    <>
+      <style jsx>{`
+        /* Bootstrap CDN should be included in your index.html */
+        
+        /* Custom CSS Styles */
+        .dashboard-container {
+          min-height: 100vh;
+          background-color: #f8f9fa;
+        }
+
+        .loading-container {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 1050;
+          width: 16rem;
+          height: 100vh;
+          background-color: white;
+          box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+          transform: translateX(-100%);
+          transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.show {
+          transform: translateX(0);
+        }
+
+        .sidebar-header {
+          height: 4rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 1.5rem;
+          border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-brand {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .sidebar-brand-text {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #212529;
+          text-decoration: none;
+        }
+
+        .sidebar-nav {
+          margin-top: 1.5rem;
+          padding: 0 0.75rem;
+        }
+
+        .nav-item {
+          margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem 0.75rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          border-radius: 0.5rem;
+          color: #6c757d;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+          background-color: #f8f9fa;
+          color: #212529;
+        }
+
+        .nav-link.active {
+          background-color: #e3f2fd;
+          color: #1976d2;
+          border-right: 2px solid #1976d2;
+        }
+
+        .nav-icon {
+          margin-right: 0.75rem;
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+
+        .sidebar-footer {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          padding: 1rem;
+          border-top: 1px solid #e9ecef;
+        }
+
+        .logout-btn {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          padding: 0.5rem 0.75rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #6c757d;
+          background: none;
+          border: none;
+          border-radius: 0.5rem;
+          transition: background-color 0.2s;
+        }
+
+        .logout-btn:hover {
+          background-color: #f8f9fa;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+          margin-left: 0;
+          transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-content.with-sidebar {
+          margin-left: 16rem;
+        }
+
+        .topbar {
+          background-color: white;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          border-bottom: 1px solid #e9ecef;
+        }
+
+        .topbar-content {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 4rem;
+          padding: 0 1.5rem;
+        }
+
+        .topbar-left {
+          display: flex;
+          align-items: center;
+        }
+
+        .menu-toggle {
+          padding: 0.5rem;
+          margin-right: 0.5rem;
+          border: none;
+          background: none;
+          color: #6c757d;
+          border-radius: 0.375rem;
+          transition: all 0.2s;
+        }
+
+        .menu-toggle:hover {
+          background-color: #f8f9fa;
+          color: #495057;
+        }
+
+        .topbar-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #212529;
+          margin: 0;
+        }
+
+        .topbar-right {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .notification-bell {
+          position: relative;
+          color: #6c757d;
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+
+        .notification-bell:hover {
+          color: #495057;
+        }
+
+        .notification-badge {
+          position: absolute;
+          top: -0.25rem;
+          right: -0.25rem;
+          width: 0.75rem;
+          height: 0.75rem;
+          background-color: #dc3545;
+          border-radius: 50%;
+        }
+
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .user-avatar {
+          width: 2rem;
+          height: 2rem;
+          background-color: #0d6efd;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        .user-details h6 {
+          margin: 0;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #212529;
+        }
+
+        .user-details small {
+          color: #6c757d;
+          text-transform: capitalize;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+          padding: 1.5rem;
+        }
+
+        .welcome-section {
+          margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+          font-size: 1.875rem;
+          font-weight: 700;
+          color: #212529;
+          margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+          color: #6c757d;
+        }
+
+        /* Stats Cards */
+        .stats-card {
+          background: white;
+          border-radius: 0.75rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          border: 1px solid #f1f3f4;
+          padding: 1.5rem;
+          height: 100%;
+        }
+
+        .stats-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+        }
+
+        .stats-info h6 {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #6c757d;
+          margin: 0;
+        }
+
+        .stats-number {
+          font-size: 1.875rem;
+          font-weight: 700;
+          color: #212529;
+          margin: 0;
+        }
+
+        .stats-icon {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .stats-icon.primary {
+          background-color: #e3f2fd;
+          color: #1976d2;
+        }
+
+        .stats-icon.success {
+          background-color: #e8f5e8;
+          color: #2e7d32;
+        }
+
+        .stats-icon.warning {
+          background-color: #fff3e0;
+          color: #f57c00;
+        }
+
+        .stats-icon.danger {
+          background-color: #ffebee;
+          color: #c62828;
+        }
+
+        .stats-footer {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .stats-footer.success {
+          color: #2e7d32;
+        }
+
+        .stats-footer.primary {
+          color: #1976d2;
+        }
+
+        .stats-footer.warning {
+          color: #f57c00;
+        }
+
+        .stats-footer.danger {
+          color: #c62828;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+          margin-bottom: 2rem;
+        }
+
+        .section-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #212529;
+          margin-bottom: 1rem;
+        }
+
+        .action-card {
+          background: white;
+          border-radius: 0.75rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          border: 1px solid #f1f3f4;
+          padding: 1.5rem;
+          text-decoration: none;
+          color: inherit;
+          transition: box-shadow 0.2s;
+          height: 100%;
+        }
+
+        .action-card:hover {
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          text-decoration: none;
+          color: inherit;
+        }
+
+        .action-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .action-icon {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 1rem;
+          color: white;
+        }
+
+        .action-icon.bg-primary {
+          background-color: #0d6efd;
+        }
+
+        .action-icon.bg-success {
+          background-color: #198754;
+        }
+
+        .action-icon.bg-secondary {
+          background-color: #6c757d;
+        }
+
+        .action-icon.bg-warning {
+          background-color: #fd7e14;
+        }
+
+        .action-icon.bg-danger {
+          background-color: #dc3545;
+        }
+
+        .action-icon.bg-info {
+          background-color: #0dcaf0;
+        }
+
+        .action-title {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #212529;
+          margin: 0;
+          transition: color 0.2s;
+        }
+
+        .action-card:hover .action-title {
+          color: #0d6efd;
+        }
+
+        .action-description {
+          font-size: 0.875rem;
+          color: #6c757d;
+          margin: 0;
+        }
+
+        /* Alerts Panel */
+        .alerts-panel {
+          background: white;
+          border-radius: 0.75rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          border: 1px solid #f1f3f4;
+        }
+
+        .alerts-header {
+          padding: 1.5rem;
+          border-bottom: 1px solid #e9ecef;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .alerts-content {
+          padding: 1.5rem;
+        }
+
+        .alert-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          padding: 1rem;
+          background-color: #f8f9fa;
+          border-radius: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .alert-item:last-child {
+          margin-bottom: 0;
+        }
+
+        .alert-indicator {
+          width: 0.5rem;
+          height: 0.5rem;
+          border-radius: 50%;
+          margin-top: 0.5rem;
+          flex-shrink: 0;
+        }
+
+        .alert-indicator.high {
+          background-color: #dc3545;
+        }
+
+        .alert-indicator.medium {
+          background-color: #fd7e14;
+        }
+
+        .alert-indicator.low {
+          background-color: #198754;
+        }
+
+        .alert-body {
+          flex: 1;
+        }
+
+        .alert-title {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #212529;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .alert-message {
+          font-size: 0.875rem;
+          color: #6c757d;
+          margin: 0 0 0.5rem 0;
+        }
+
+        .alert-badge {
+          display: inline-block;
+          padding: 0.25rem 0.5rem;
+          border-radius: 50rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+
+        .alert-badge.high {
+          background-color: #f8d7da;
+          color: #721c24;
+        }
+
+        .alert-badge.medium {
+          background-color: #fff3cd;
+          color: #856404;
+        }
+
+        .alert-badge.low {
+          background-color: #d1e7dd;
+          color: #0a3622;
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 1040;
+        }
+
+        /* Responsive */
+        @media (min-width: 992px) {
+          .sidebar {
+            position: static;
+            transform: translateX(0);
+          }
+          
+          .main-content {
+            margin-left: 16rem;
+          }
+          
+          .menu-toggle {
+            display: none;
+          }
+        }
+
+        @media (max-width: 991.98px) {
+          .user-details {
+            display: none;
+          }
+        }
+      `}</style>
+
+      <div className="dashboard-container">
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div 
+            className="sidebar-overlay d-lg-none" 
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+
+        {/* Sidebar */}
+        <div className={`sidebar ${sidebarOpen ? 'show' : ''} d-lg-block`}>
+          <div className="sidebar-header">
+            <div className="sidebar-brand">
+              <Heart size={32} color="#0d6efd" />
+              <span className="sidebar-brand-text">HealthCare Pro</span>
+            </div>
+            <button 
+              className="btn-close d-lg-none" 
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <nav className="sidebar-nav">
+            {getNavItems().map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.name} className="nav-item">
+                  <Link
+                    to={item.path}
+                    className={`nav-link ${item.current ? 'active' : ''}`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <Icon size={20} className="nav-icon" />
+                    {item.name}
+                  </Link>
+                </div>
+              );
+            })}
+          </nav>
+
+          <div className="sidebar-footer">
+            <button onClick={handleLogout} className="logout-btn">
+              <LogOut size={20} className="nav-icon" />
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        {/* Main content */}
+        <div className="main-content">
+          {/* Top bar */}
+          <div className="topbar">
+            <div className="topbar-content">
+              <div className="topbar-left">
+                <button
+                  className="menu-toggle d-lg-none"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <Menu size={24} />
+                </button>
+                <h1 className="topbar-title">Dashboard</h1>
+              </div>
+
+              <div className="topbar-right">
+                <div className="notification-bell">
+                  <Bell size={24} />
+                  {alerts.filter((a) => a.priority === "high").length > 0 && (
+                    <span className="notification-badge"></span>
+                  )}
+                </div>
+                <div className="user-info">
+                  <div className="user-avatar">
+                    {user.name?.[0] || "U"}
+                  </div>
+                  <div className="user-details">
+                    <h6>{user.name}</h6>
+                    <small>{user.role}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Dashboard content */}
+          <div className="dashboard-content">
+            {/* Welcome section */}
+            <div className="welcome-section">
+              <h2 className="welcome-title">Welcome back, {user.name}!</h2>
+              <p className="welcome-subtitle">
+                Here's what's happening in your healthcare system today.
+              </p>
+            </div>
+
+            {/* Stats cards */}
+            <div className="row mb-4">
+              <div className="col-12 col-md-6 col-lg-3 mb-3">
+                <div className="stats-card">
+                  <div className="stats-header">
+                    <div className="stats-info">
+                      <h6>Total Patients</h6>
+                      <p className="stats-number">{stats.totalPatients}</p>
+                    </div>
+                    <div className="stats-icon primary">
+                      <Users size={24} />
+                    </div>
+                  </div>
+                  <div className="stats-footer success">
+                    <TrendingUp size={16} />
+                    <small>+12% from last month</small>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 col-md-6 col-lg-3 mb-3">
+                <div className="stats-card">
+                  <div className="stats-header">
+                    <div className="stats-info">
+                      <h6>Active Tokens</h6>
+                      <p className="stats-number">{stats.activeTokens}</p>
+                    </div>
+                    <div className="stats-icon success">
+                      <Clock size={24} />
+                    </div>
+                  </div>
+                  <div className="stats-footer primary">
+                    <Activity size={16} />
+                    <small>Currently active</small>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 col-md-6 col-lg-3 mb-3">
+                <div className="stats-card">
+                  <div className="stats-header">
+                    <div className="stats-info">
+                      <h6>Pending OT</h6>
+                      <p className="stats-number">{stats.pendingOT}</p>
+                    </div>
+                    <div className="stats-icon warning">
+                      <Calendar size={24} />
+                    </div>
+                  </div>
+                  <div className="stats-footer warning">
+                    <Clock size={16} />
+                    <small>Scheduled today</small>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 col-md-6 col-lg-3 mb-3">
+                <div className="stats-card">
+                  <div className="stats-header">
+                    <div className="stats-info">
+                      <h6>Low Stock Items</h6>
+                      <p className="stats-number">{stats.lowStock}</p>
+                    </div>
+                    <div className="stats-icon danger">
+                      <AlertTriangle size={24} />
+                    </div>
+                  </div>
+                  <div className="stats-footer danger">
+                    <Shield size={16} />
+                    <small>Needs attention</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="quick-actions">
+              <h3 className="section-title">Quick Actions</h3>
+              <div className="row">
+                {getQuickActions().map((action, index) => {
+                  const Icon = action.icon;
+                  return (
+                    <div key={index} className="col-12 col-md-6 col-lg-4 mb-3">
+                      <Link to={action.path} className="action-card">
+                        <div className="action-header">
+                          <div className={`action-icon bg-${action.color}`}>
+                            <Icon size={24} />
+                          </div>
+                          <div>
+                            <h4 className="action-title">{action.title}</h4>
+                            <p className="action-description">{action.description}</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Recent Alerts */}
+            <div className="alerts-panel">
+              <div className="alerts-header">
+                <h3 className="section-title mb-0">Recent Alerts</h3>
+                <Link to="/alerts" className="btn btn-link p-0">
+                  View All
+                </Link>
+              </div>
+              <div className="alerts-content">
+                {loading ? (
+                  <div className="text-center py-4">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                ) : alerts.length === 0 ? (
+                  <p className="text-muted text-center py-4">No recent alerts.</p>
+                ) : (
+                  <div>
+                    {alerts.slice(0, 3).map((alert) => (
+                      <div key={alert._id} className="alert-item">
+                        <div className={`alert-indicator ${alert.priority}`}></div>
+                        <div className="alert-body">
+                          <h4 className="alert-title">{alert.title}</h4>
+                          <p className="alert-message">{alert.message}</p>
+                          <span className={`alert-badge ${alert.priority}`}>
+                            {alert.priority} priority
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

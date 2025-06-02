@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import socket from "../utils/socket";
-import DoctorSelector from "../components/DoctorSelector";
+ import DoctorSelector from "../component/DoctorSelector";
 
 const TokenManagement = () => {
   const [tokens, setTokens] = useState([]);
