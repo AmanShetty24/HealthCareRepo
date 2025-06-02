@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles/LoginPage.css";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
     const [email, setEmail] = useState("");
@@ -18,7 +19,11 @@ function LoginPage() {
             (user) => user.email === email && user.password === password
         );
     };
+    const navigate = useNavigate();
 
+    const goToDashboard = () => {
+        navigate("/dashboard");
+    };
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!email || !password) {
