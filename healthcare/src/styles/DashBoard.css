@@ -1,0 +1,11 @@
+.dashboard-container {
+  padding: 24px;
+}
+
+.quick-link {
+  background-color: #e3f2fd;
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+}
