@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import socket from "../utils/socket";
-
+import "../styles/AlertsPanel.css"; // Assuming you have some styles for the panel
 const AlertsPanel = () => {
   const [alerts, setAlerts] = useState([]);
   const [filter, setFilter] = useState({ type: "", priority: "" });

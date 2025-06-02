@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import socket from "../utils/socket";
-
+import "../styles/PublicDisplay.css"; // Assuming you have some styles for the public display
 const PublicDisplay = () => {
   const [tokens, setTokens] = useState([]);
   const [ongoingOTs, setOngoingOTs] = useState([]);

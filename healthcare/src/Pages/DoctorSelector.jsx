@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
-
+import "../styles/DoctorSelector.css"; // Assuming you have some styles for the profile page
 const DoctorSelector = ({ value, onChange, disabled }) => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);

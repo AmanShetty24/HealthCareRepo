@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import socket from "../utils/socket";
- import DoctorSelector from "../component/DoctorSelector";
-
+import DoctorSelector from "../component/DoctorSelector";
+import "../styles/TokenManagement.css"; // Assuming you have some styles for the token management
 const TokenManagement = () => {
   const [tokens, setTokens] = useState([]);
   const [department, setDepartment] = useState("");

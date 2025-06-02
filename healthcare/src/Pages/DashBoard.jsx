@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuthContext } from "../context/AuthContext";
-
+import "../styles/Dashboard.css"; // Assuming you have some styles for the dashboard
 export default function Dashboard() {
   const { user } = useAuthContext();
   const [alerts, setAlerts] = useState([]);
