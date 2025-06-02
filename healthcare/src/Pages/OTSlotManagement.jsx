@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import socket from "../utils/socket";
-import "../styles/DrugInventoryManagement.css"; // Assuming you have some styles
-
-
+import "../styles/OTSlotManagement.css"; // Assuming you have some styles for the OT slot management
 const OTSlotManagement = () => {
   const [slots, setSlots] = useState([]);
   const [form, setForm] = useState({
